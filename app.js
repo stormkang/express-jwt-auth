@@ -46,7 +46,9 @@ app.post('/api/posts', verifyToken, (req, res) => {
 function verifyToken(req, res, next) {
   // 解析请求头Authorization, 获取token信息. 建议使用Postman进行调试.
   // 请求接口前记得在Headers中添加Authorization头(首字母A大写), 对应的值就是之前登录生成的token
-  const token = req.headers['authorization']; // 这里authorization的首字母A一定要小写!!!
+  // 这里authorization的首字母A一定要小写!!!  
+  // 具体参考: http://nodejs.cn/api/http2.html#http2_request_headers
+  const token = req.headers['authorization']; 
   if (token) {
     // 有token, 进行验证
     jwt.verify(token, secretKey, (err, data) => {
@@ -56,10 +58,7 @@ function verifyToken(req, res, next) {
         // 自定义code码. 过期: 8001, 无效: 8002, 默认8000.
         const code = name === 'TokenExpiredError' ? 
           8001 : (name === 'JsonWebTokenError' ? 8002 : 8000);
-        res.json({
-          code,
-          msg: message 
-        });
+        res.json({ code, msg: message });
       } else {
         // 验证成功
         console.log('data', JSON.stringify(data, null, 2));
